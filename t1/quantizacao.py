@@ -59,6 +59,8 @@ def mediancut(ncolors, img):
     linhas, colunas, canais = img.shape
     pixels = img[:]
     # pixels = sorted([pixels], key=lambda x: x[0])
+    
+    # pega rgb de todos pixels e coloca em um array ordenado
     for i in range (colunas):
         test = pixels[:,i]
         test = sorted(test, key=lambda x: x[0])
@@ -67,8 +69,8 @@ def mediancut(ncolors, img):
     final = np.unique(final, axis = 0)
     palheta.append(final)
 
-
-
+    
+    # divide os pixels em n arrays em que n = numero de cores
     while len(palheta) < ncolors:
         tamanho = len(palheta)
         for i in range(len(palheta)):
@@ -80,11 +82,13 @@ def mediancut(ncolors, img):
         for i in range(tamanho):
             del palheta[0]
 
+    # pega a cor que fica no meio de cada vetor
     for i in range (len(palheta)):
         meio = int(len(palheta[i])/2)
         colorsarray.append(palheta[i][meio])
 
     dist = []
+    # calcula a distancia entre a cor do pixel na imagem original e as cores encontradas
     for i in range (linhas):
         for j in range (colunas):
             for color in colorsarray:
