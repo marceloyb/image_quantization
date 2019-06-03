@@ -36,76 +36,76 @@ def uniforme(ncolors, img):
     b = np.linspace(0, 255, num = rgbarray[1], dtype = int)
     c = np.linspace(0, 255, num = rgbarray[2], dtype = int)
 
-    colorsarray = np.array(np.meshgrid(a, b, c)).T.reshape(-1,3)
-    linhas, colunas, canais = img.shape
-    dist = []
-    
-    # Transforma a imagem original na imagem de saída, com a técnica de quantização
-    for i in range (linhas):
-        for j in range (colunas):
-            for color in colorsarray:
-                dist.append(np.linalg.norm(img[i,j] - color))
-            img[i,j] = colorsarray[dist.index(min(dist))]
-            dist.clear()
-    
+    palheta = np.array(np.meshgrid(a, b, c)).T.reshape(-1,3)
+   
+
+    # para cada pixel da imagem, faz a distância entre esse pixel e cada um dos elementos da palheta de cores
+    # armazena a distância como um elemento do vetor distance
+    distancia = np.linalg.norm(img[:,:,None] - palheta[None,None,:], axis=3)
+    # pega o índice de qual a cor de menor distância
+    indices_palheta = np.argmin(distancia, axis=2)
+    # cria a imagem nova com base na palheta
+    img = palheta[indices_palheta]
+
 
     return img
     
 def mediancut(ncolors, img):
-    pixels = []
-    final = []
+    bucket = []
     palheta = []
-    colorsarray = []
-    linhas, colunas, canais = img.shape
-    pixels = img[:]
-    # pixels = sorted([pixels], key=lambda x: x[0])
-    
+
     # pega rgb de todos pixels e coloca em um array ordenado
-    for i in range (colunas):
-        test = pixels[:,i]
-        test = sorted(test, key=lambda x: x[0])
-        final.extend(np.unique(test, axis = 0))
-    final = sorted(final, key=lambda x: x[0])
-    final = np.unique(final, axis = 0)
-    palheta.append(final)
+    # esse array é jogado em um bucket
 
-    
-    # divide os pixels em n arrays em que n = numero de cores
-    while len(palheta) < ncolors:
-        tamanho = len(palheta)
-        for i in range(len(palheta)):
-            meio = int(len(palheta[i])/2)
-            a = palheta[i][:meio]
-            b = palheta[i][meio:]
-            palheta.append(a)
-            palheta.append(b)
+    colors = np.concatenate(img[:,:], axis= 0)
+    colors = np.unique(colors, axis = 0)
+    bucket.append(colors)
+   
+    # divide o bucket original em n buckets em que n = numero de cores
+    while len(bucket) < ncolors:
+        tamanho = len(bucket)
         for i in range(tamanho):
-            del palheta[0]
+            meio = int(len(bucket[i])/2)
+            a = bucket[i][:meio]
+            b = bucket[i][meio:]
+            bucket.append(a)
+            bucket.append(b)
+        for i in range(tamanho):
+            del bucket[0]
 
-    # pega a cor que fica no meio de cada vetor
-    for i in range (len(palheta)):
-        meio = int(len(palheta[i])/2)
-        colorsarray.append(palheta[i][meio])
+    # identifica a cor mediana para cada um dos buckets de cor
+    for i in range (len(bucket)):
+        meio = int(len(bucket[i])/2)
+        palheta.append(bucket[i][meio])
 
-    dist = []
-    # calcula a distancia entre a cor do pixel na imagem original e as cores encontradas
-    for i in range (linhas):
-        for j in range (colunas):
-            for color in colorsarray:
-                dist.append(np.linalg.norm(img[i,j] - color))
-            img[i,j] = colorsarray[dist.index(min(dist))]
-            dist.clear()
+    palheta = np.array(palheta).reshape(-1, 3)
+    # para cada pixel da imagem, faz a distância entre esse pixel e cada um dos elementos da palheta de cores
+    # armazena a distância como um elemento do vetor distance
+    distancia = np.linalg.norm(img[:,:,None] - palheta[None,None,:], axis=3)
+    # pega o índice de qual a cor de menor distância
+    indices_palheta = np.argmin(distancia, axis=2)
+    # cria a imagem nova com base na palheta
+    img = palheta[indices_palheta]
 
     return img
 
 
 if __name__ == '__main__':
-    # ncolors = int(input("Insira o número de cores: "))
-    ncolors = 64
+    metodo = int(input("Método de quantização:\n (1) Uniforme \n (2) Corte Mediano \n"))
+    # ncolors = 256
     img = cv2.imread("index.jpg")
-
-    imgUniforme = uniforme(ncolors, img)
-    cv2.imwrite("uniforme.jpg", imgUniforme)
+    ncolors = int(input("Insira o número de cores: "))
     
-    # imgMedian = mediancut(ncolors, img)
-    # cv2.imwrite("mediana.jpg", imgMedian)
+    if metodo == 1:
+        imgUniforme = uniforme(ncolors, img)
+        cv2.imwrite("uniforme.jpg", imgUniforme)
+    
+    elif metodo == 2:
+        if ncolors % 2 == 0:
+            imgMedian = mediancut(ncolors, img)
+            cv2.imwrite("mediana.jpg", imgMedian)
+        else: 
+            raise Exception("Número de cores para o corte mediano precisa ser potência de 2")
+    
+    else:
+        raise Exception("Método não identificado")
