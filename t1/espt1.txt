@@ -1,0 +1,8 @@
+QUANTIZAÇÃO DE COR
+O objetivo deste trabalho é implementar e testar dois métodos de quantização de imagens coloridas representadas no sistema de cor RGB.
+1) a primeira implementação consiste em quantizar uma imagem no referido sistema de cor para n cores resultantes, através da seleção de n = a x b x c pontos uniformemente espaçados. Cada um destes pontos do cubo será representativo de uma cor resultante. Cada cor na imagem de entrada será comparada com uma das cores finais e será associada à cor mais próxima (aplicar uma função de distância para esta avaliação).
+comando linspace python
+2) a segunda implementação é a do algoritmo do Corte Mediano para quantização de cores.
+Os dois métodos devem ser implementados em Python 3.x, usando-se a biblioteca Numpy. Use a biblioteca OpenCV para carregar/salvar/mostrar as imagens. Priorize a utilização de fatiamento (slicing) no lugar de estruturas de repetição.
+As duas implementações devem ser utilizadas para quantizar uma mesma imagem. As imagens resultantes devem ser submetidas à função CPSNR (Color Peak Signal-to-Noise Ratio) para fins de comparação. Faça este experimento para diversas imagens e apresente os resultados (imagens resultantes e as CPSNR calculadas).
+Deverá constar no relatório um texto introdutório explicando a teoria considerada no trabalho, o código-fonte, as imagens resultantes de um ou mais experimentos de comparação e os resultados quantitativos
