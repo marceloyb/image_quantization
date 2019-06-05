@@ -53,12 +53,22 @@ def uniforme(ncolors, img):
 def mediancut(ncolors, img):
     bucket = []
     palheta = []
-
+    dispersao = []
     # pega rgb de todos pixels e coloca em um array ordenado
     # esse array é jogado em um bucket
 
-    colors = np.concatenate(img[:,:], axis= 0)
+    colors = np.concatenate(img[:,:], axis = 0)
     colors = np.unique(colors, axis = 0)
+
+    # descobre qual cor tem a maior dispersão e ordena
+    dispersao.append(np.amax(colors[:, 0]) - np.amin(colors[:, 0]))
+    dispersao.append(np.amax(colors[:, 1]) - np.amin(colors[:, 1]))
+    dispersao.append(np.amax(colors[:, 2]) - np.amin(colors[:, 2]))
+    dispersao_key = dispersao.index(max(dispersao))
+    colors = sorted(colors, key=lambda x: x[dispersao_key])
+    
+    # print(colors)
+
     bucket.append(colors)
    
     # divide o bucket original em n buckets em que n = numero de cores
@@ -89,12 +99,12 @@ def mediancut(ncolors, img):
 
     return img
 
-
-if __name__ == '__main__':
-    metodo = int(input("Método de quantização:\n (1) Uniforme \n (2) Corte Mediano \n"))
-    # ncolors = 256
+def main():
+    # metodo = int(input("Método de quantização:\n (1) Uniforme \n (2) Corte Mediano \n"))
+    ncolors = 16
+    metodo = 2
     img = cv2.imread("index.jpg")
-    ncolors = int(input("Insira o número de cores: "))
+    # ncolors = int(input("Insira o número de cores: "))
     
     if metodo == 1:
         imgUniforme = uniforme(ncolors, img)
@@ -109,3 +119,6 @@ if __name__ == '__main__':
     
     else:
         raise Exception("Método não identificado")
+
+if __name__ == '__main__':
+    main()
