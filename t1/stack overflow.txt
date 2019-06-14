@@ -1,0 +1,18 @@
+duvida overflow
+
+So, basically i have a array with 16 RGB color values, and i have to calculate the distance between the RGB value of a pixel in the input image and all of these 16. The RGB value which has the lower distance will be the RGB value in the output image. 
+
+
+The problem is: I'm using nested for loops to do these operations, and it's REALLY slow. Excerpt as follow:
+
+```python
+for i in range (row):
+        for j in range (columns):
+            pixel = img[i, j]
+            for color in colorsarray:
+                dist.append(np.linalg.norm(pixel - color))
+            img[i,j] = colorsarray[dist.index(min(dist))]
+            dist.clear()
+```
+
+Is there a numpy function that can help me optimize this?

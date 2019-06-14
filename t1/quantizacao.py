@@ -49,7 +49,10 @@ def uniforme(ncolors, img):
 
 
     return img
-    
+
+def argmedian(array, column):
+    return np.argsort(array[:, column])[len(array) // 2]
+
 def mediancut(ncolors, img):
     bucket = []
     palheta = []
@@ -68,9 +71,9 @@ def mediancut(ncolors, img):
     colors = sorted(colors, key=lambda x: x[dispersao_key])
     
     # print(colors)
-
+    # colors = np.array[colors, 'uint8']
     bucket.append(colors)
-   
+ 
     # divide o bucket original em n buckets em que n = numero de cores
     while len(bucket) < ncolors:
         tamanho = len(bucket)
@@ -85,8 +88,9 @@ def mediancut(ncolors, img):
 
     # identifica a cor mediana para cada um dos buckets de cor
     for i in range (len(bucket)):
-        meio = int(len(bucket[i])/2)
-        palheta.append(bucket[i][meio])
+        bk = np.array(bucket[i], int)
+        meio = argmedian(bk, dispersao_key)
+        palheta.append(bk[meio])
 
     palheta = np.array(palheta).reshape(-1, 3)
     # para cada pixel da imagem, faz a distância entre esse pixel e cada um dos elementos da palheta de cores
@@ -101,7 +105,7 @@ def mediancut(ncolors, img):
 
 def main():
     # metodo = int(input("Método de quantização:\n (1) Uniforme \n (2) Corte Mediano \n"))
-    ncolors = 16
+    ncolors = 64
     metodo = 2
     img = cv2.imread("index.jpg")
     # ncolors = int(input("Insira o número de cores: "))
